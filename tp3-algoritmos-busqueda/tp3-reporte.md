@@ -8,6 +8,8 @@ Escenario 2: Las acciones tienen los siguientes costos:
 • Moverse a la izquierda o la derecha: costo 1.
 • Moverse hacia arriba o abajo: costo 10.
 
+Se especifica que el Algoritmo de A* utiliza la heurística eculidiana
+
 A continuación, se mostrarán graficos y un minimo analisis de cada uno
 
 ## 1. Tiempo de Ejecución
