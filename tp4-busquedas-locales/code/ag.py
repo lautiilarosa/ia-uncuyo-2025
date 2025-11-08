@@ -32,9 +32,9 @@ class GeneticNQueens:
 
     
     def mutate(self, individual):
-        if np.random.rand() < self.mutation_rate:
-            idx = np.random.randint(0, self.n)
-            individual[idx] = np.random.randint(0, self.n)
+        for i in range(self.n):
+            if np.random.rand() < self.mutation_rate:
+                individual[i] = np.random.randint(0, self.n)
 
     
     def evolve(self, population):
@@ -56,20 +56,26 @@ class GeneticNQueens:
     def run(self, initial_population):
         population = initial_population
         generations = 0
+        total_states = 0  # contador de todos los estados evaluados
 
         for _ in range(self.max_generations):
-            population = self.evolve(population)
-            generations += 1
-
+            # Evaluar población actual
             fitness_values = np.array([self.fitness(ind) for ind in population])
+            total_states += len(population)  # cada evaluación cuenta como un estado
+
             best_idx = np.argmax(fitness_values)
             best = population[best_idx]
             best_h = h(best)
+            total_states += 1  # evaluamos h(best) también, opcional
 
             if best_h == 0:
-                return best, best_h, generations  # devuelve la mejor solución encontrada
+                return best, best_h, total_states  # devolver estados reales
 
-            if generations >= self.max_states:
-                return best, best_h, generations  # devuelve lo mejor logrado aunque no sea solución
+            # Evolucionar población
+            population = self.evolve(population)
+            generations += 1
 
-        return best, best_h, generations
+            # Dentro de evolve, también hay evaluaciones para elitismo y selección
+            # Vamos a sumarlas allí:
+
+        return best, best_h, total_states

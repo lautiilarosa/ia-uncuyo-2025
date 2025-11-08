@@ -6,7 +6,7 @@ def schedule(T):
     """
     Schedule geométrico con factor de enfriamiento a = 0.9.
     """
-    a = 0.9
+    a = 0.99
     return a * T
 
 def simulated_annealing(tablero, max_estados):
@@ -22,7 +22,7 @@ def simulated_annealing(tablero, max_estados):
     T = 100
     estados = 1
 
-    while estados < max_estados and T > 1:
+    while estados < max_estados and T > 0.001:
         column = random.randint(0, len(tablero) - 1)
         fila = random.randint(0, len(tablero) - 1)
         while fila == tablero[column]:

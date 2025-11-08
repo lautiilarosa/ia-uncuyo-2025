@@ -11,7 +11,7 @@ from heuristic import h
 def main_experiment():
     sizes = [4, 8, 10]
     num_runs = 30
-    max_states = 10000
+    max_states = 3000
     output_file = "resultados_n_reinas.csv"
 
     def run_random(tablero, max_states):
@@ -27,7 +27,7 @@ def main_experiment():
         return tablero, heur, estados
 
     def run_genetic(size, max_states):
-        pop_size = 50
+        pop_size = 200
         mutation_rate = 0.1
         max_generations = max_states
 

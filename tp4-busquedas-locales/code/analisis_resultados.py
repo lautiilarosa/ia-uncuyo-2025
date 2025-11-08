@@ -3,97 +3,54 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 import ast
 
-def analizar_resultados():
-    # --- Cargar CSV ---
-    df = pd.read_csv("resultados_n_reinas.csv")
-
-    # --- Convertir la columna 'best_solution' de string a lista ---
-    # (solo si no está vacía o mal formateada)
+def cargar_datos(csv_file="resultados_n_reinas.csv"):
+    df = pd.read_csv(csv_file)
+    # Convertir 'best_solution' de string a lista
     df["best_solution"] = df["best_solution"].apply(
         lambda x: ast.literal_eval(x) if isinstance(x, str) and x.startswith("[") else x
     )
+    return df
 
-    # --- i) Porcentaje de soluciones óptimas (H == 0) ---
-    porcentaje_optimos = (
-        df.groupby(["algorithm_name", "size"])["H"]
-        .apply(lambda x: (x == 0).sum() / len(x) * 100)
-        .reset_index(name="porcentaje_optimos")
-    )
+def estadisticas(df):
+    resumen = df.groupby(["algorithm_name", "size"]).agg(
+        porcentaje_optimos=("H", lambda x: (x==0).sum()/len(x)*100),
+        H_mean=("H", "mean"),
+        H_std=("H", "std"),
+        time_mean=("time", "mean"),
+        time_std=("time", "std"),
+        states_mean=("states", "mean"),
+        states_std=("states", "std")
+    ).reset_index()
+    print(resumen)
 
-    # --- ii) H promedio y desviación estándar ---
-    H_stats = df.groupby(["algorithm_name", "size"])["H"].agg(["mean", "std"]).reset_index()
+def generar_boxplot(df, size, y_col, titulo, log_scale=False):
+    plt.figure(figsize=(8,5))
+    subset = df[df["size"] == size]
+    sns.boxplot(data=subset, x="algorithm_name", y=y_col)
+    plt.title(f"{titulo} - {size} reinas")
+    plt.xlabel("Algoritmo")
+    plt.ylabel(y_col)
+    if log_scale:
+        plt.yscale("log")
+    plt.xticks(rotation=20)
+    plt.tight_layout()
+    plt.savefig(f"boxplot_{y_col}_{size}.png", dpi=300)
+    plt.close()
 
-    # --- iii) Tiempo promedio y desviación estándar ---
-    time_stats = df.groupby(["algorithm_name", "size"])["time"].agg(["mean", "std"]).reset_index()
-
-    # --- iv) Estados promedio y desviación estándar ---
-    states_stats = df.groupby(["algorithm_name", "size"])["states"].agg(["mean", "std"]).reset_index()
-
-    # --- Mostrar resumen por consola ---
-    print("\n📈 Porcentaje de soluciones óptimas:")
-    print(porcentaje_optimos)
-    print("\n📊 H promedio y desviación estándar:")
-    print(H_stats)
-    print("\n⏱ Tiempo promedio y desviación estándar:")
-    print(time_stats)
-    print("\n🔁 Estados promedio y desviación estándar:")
-    print(states_stats)
-
-    # --- Graficar Boxplots por tamaño de tablero ---
-    sns.set(style="whitegrid", palette="muted", font_scale=1.1)
+def graficar_todos_boxplots(df):
     tamaños = sorted(df["size"].unique())
-
-    # --- Boxplot de H() ---
     for t in tamaños:
-        plt.figure(figsize=(8, 5))
-        subset = df[df["size"] == t]
-        sns.boxplot(data=subset, x="algorithm_name", y="H")
-        plt.title(f"Distribución de H() - {t} reinas")
-        plt.xlabel("Algoritmo")
-        plt.ylabel("Valor de H()")
-        plt.xticks(rotation=20)
-        plt.tight_layout()
-        plt.savefig(f"boxplot_H_{t}.png", dpi=300)
-        plt.close()
-
-    # --- Boxplot de tiempos ---
-    for t in tamaños:
-        plt.figure(figsize=(8, 5))
-        subset = df[df["size"] == t]
-        sns.boxplot(data=subset, x="algorithm_name", y="time")
-        plt.title(f"Tiempo de ejecución - {t} reinas")
-        plt.xlabel("Algoritmo")
-        plt.ylabel("Tiempo (s)")
-        plt.xticks(rotation=20)
-        plt.tight_layout()
-        plt.savefig(f"boxplot_time_{t}.png", dpi=300)
-        plt.close()
-
-    # --- Boxplot de estados explorados ---
-    for t in tamaños:
-        plt.figure(figsize=(8, 5))
-        subset = df[df["size"] == t]
-        sns.boxplot(data=subset, x="algorithm_name", y="states")
-        plt.title(f"Estados explorados - {t} reinas")
-        plt.xlabel("Algoritmo")
-        plt.ylabel("Cantidad de estados")
-        plt.xticks(rotation=20)
-        plt.tight_layout()
-        plt.savefig(f"boxplot_states_{t}.png", dpi=300)
-        plt.close()
-
-    print("\n✅ Gráficos guardados por tamaño de tablero:")
-    print("   → boxplot_H_[size].png")
-    print("   → boxplot_time_[size].png")
-    print("   → boxplot_states_[size].png")
-
+        generar_boxplot(df, t, "H", "Distribución de H()")
+        generar_boxplot(df, t, "states", "Estados explorados", log_scale=True)
+        generar_boxplot(df, t, "time", "Tiempo de ejecución", log_scale=True)
+    print("\n✅ Gráficos guardados por tamaño y métrica.")
 
 def graficar_evolucion_H(H_history, algoritmo, size):
     """
     Grafica la evolución de H() a lo largo de las iteraciones
-    para una única ejecución (inciso 6 del trabajo).
+    para una única ejecución.
     """
-    plt.figure(figsize=(8, 5))
+    plt.figure(figsize=(8,5))
     plt.plot(range(len(H_history)), H_history, marker="o", linewidth=1.8)
     plt.xlabel("Iteración")
     plt.ylabel("H()")
@@ -103,6 +60,7 @@ def graficar_evolucion_H(H_history, algoritmo, size):
     plt.savefig(f"H_evolucion_{algoritmo}_{size}.png", dpi=300)
     plt.close()
 
-
 if __name__ == "__main__":
-    analizar_resultados()
+    df = cargar_datos()
+    estadisticas(df)
+    graficar_todos_boxplots(df)

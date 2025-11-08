@@ -1,4 +1,5 @@
 from heuristic import h
+import numpy as np
 
 def col_conflictiva(tablero):
     max_conflictos = -1
@@ -52,6 +53,9 @@ def hill_climbing(tablero, max_estados):
         heur = h(tablero)
         if heur == 0:
             return True, heur, estados
+
+        if estados % 100 == 0:
+            tablero = np.random.randint(0, len(tablero), size=len(tablero))
 
     # No encontró solución dentro del límite
     return False, h(tablero), estados
