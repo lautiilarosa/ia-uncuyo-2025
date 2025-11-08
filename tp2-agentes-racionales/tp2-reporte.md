@@ -1,25 +1,78 @@
-**Reporte TP2 Inteligencia Artificial**
+# Reporte TP2 Inteligencia Artificial
 
-Agente Reflexivo: Se desarrolló un agente reflexivo simple en el cual sus sensores permiten identificar si en la celda correspondiente hay suciedad, por lo cual el agente procede a limpiarlo. Su patrón de movimiento es bastante sencillo ya que después de limpiar la celda el agente se moverá de manera aleatoria a cualquier casilla que se encuentre a la derecha,izquierda,abajo o arriba.
+## Agentes Implementados
 
-Agente Random: Como lo especifica, es un agente que toma todas decisiones de manera aleatoria, de tal manera que si en la celda que se encuentra hay o no tierra , el agente limpiará o no hará nada y se moverá a otra celda también de manera aleatoria como el agente reflexivo. Por lo tanto para cada movimiento y en una celda con suciedad hay un 50% de que el agente vaya a limpiarla.
+### Agente Reflexivo
+Se desarrolló un agente reflexivo simple cuyos sensores permiten identificar si en la celda actual hay suciedad. Cuando detecta suciedad, el agente procede a limpiarla inmediatamente. Su patrón de movimiento es aleatorio: después de limpiar (o si no hay suciedad), se mueve aleatoriamente a cualquier celda adyacente (derecha, izquierda, abajo o arriba).
 
-**Análisis del rendimiento a través de gráficos**
+### Agente Random
+Este agente toma todas sus decisiones de manera aleatoria. Cuando se encuentra en una celda con suciedad, tiene un 50% de probabilidad de limpiarla y un 50% de no hacer nada. Independientemente de su acción, siempre se moverá a una celda adyacente elegida aleatoriamente.
 
-Se especificaron una variedad de entornos para poder probar los agentes los cuales se categorizan por tamaño y por porcentaje de suciedad. Se encuentra disponibles \[“2x2”,”4x4”,”8x8”,”16x16”,”32x32”,”64x64”,”128x128”\] y dirt rate o porcentaje de suciedad de 0.1,0.2,0.4 y 0.8 por ciento. Para cada combinación que existe (alrededor de 28), se hicieron 10 pruebas con distinta semilla para cada agente, de tal manera para posteriormente analizar en un mismo entorno el desempeño o performance de los 2 agentes y comparar.
+## Metodología de Evaluación
 
-![][image1]
+### Definición de Métricas
+- **Performance:** Cantidad de celdas sucias limpiadas (máximo 1000 movimientos)
+- **Porcentaje de Limpieza:** (Celdas limpiadas / Total celdas sucias) × 100
+- **Límite:** 1000 movimientos por prueba
 
-Vemos en este gráfico la performance de cada agente por entorno que tenemos. Verá que hasta un tamaño 8x8 los agentes parecen tener un desempeño bastante equivalente, pero a medida que aumentamos el tamaño del entorno, el agente random parece ser más deficiente que un agente reflexivo simple. Esto es más que nada por el simple hecho de que el agente random en celdas que contienen suciedad, puede o no puede limpiarla algo que el agente reflexivo lo hace en un 100%. 
+### Entornos de Prueba
+- **Tamaños:** ["2x2", "4x4", "8x8", "16x16", "32x32", "64x64", "128x128"]
+- **Niveles de suciedad (dirt_rate):** 10%, 20%, 40%, 80%
+- **Pruebas por configuración:** 10 pruebas con distintas semillas
+- **Total:** 7 tamaños × 4 dirt_rates × 10 seeds = 280 pruebas por agente
 
-Por más que el agente reflexivo simple parezca más eficiente que el random, no quiere decir que este primero sea un agente que pueda cumplir con la cuota total de celdas con suciedad. Lo observamos en el siguiente gráfico:  
-![][image2]
+## Análisis de Resultados
 
-Como podrá observar, los agentes hasta el entorno 8x8, parecen limpiar el 100% de las celdas que contienen suciedad (salvando las 2x2 que no tienen), pero si aumentamos el tamaño del entorno, verá que los agentes de a poco dejarán celdas sin limpiar llegando incluso a porcentajes bajos como 5%.  
-Cabe recalcar que en entornos más grandes como 128x128, tiene un total de 16384 celdas en total y si contamos el 80 por ciento de celdas con suciedad nos daría un total de alrededor de 13107 celdas, y los agentes tienen un límite de 1000 movimientos por lo tanto sería imposible cubrir todo el terreno. Por supuesto si se desarrolla un agente más inteligente podríamos cubrir un porcentaje un poco más elevado.
+### Eficiencia por Tamaño de Entorno (Dirt Rate Específico)
 
-**Conclusión:** Podemos concluir que los 2 agentes en sí a medida que el entorno pasa a ser más complejo se vuelven bastante ineficientes, pero en cuando a su performance en ciertos entornos más medianos y chicos podemos decir que el agente reflexivo es mucho más efectivo por cuestiones de que a la hora de encontrarse una celda, este decide limpiarla, a diferencia de uno random.
+![Comparación de Performance](images/performance_principal.png)
 
-[image1]: ./images/promedioporentorno.png
+**Análisis cuantitativo para dirt_rate 80%:**
+- **Tamaño 8x8:** Reflexivo: 98.0% vs Random: 85.8% (**+12.2% diferencia**)
+- **Tamaño 16x16:** Reflexivo: 70.1% vs Random: 37.2% (**+32.9% diferencia**)
+- **Tamaño 32x32:** Reflexivo: 23.7% vs Random: 11.1% (**+12.6% diferencia**)
+- **Tamaño 128x128:** Reflexivo: 1.7% vs Random: 0.8% (**+0.9% diferencia**)
 
-[image2]: ./images/dirtrateporagente.png
+**Patrón identificado:** El agente reflexivo consistentemente logra aproximadamente **el doble del porcentaje de limpieza** que el agente random en entornos medianos y grandes.
+
+### Evolución del Desempeño vs Complejidad del Entorno
+
+![Evolución del Desempeño](images/comparacion_agentes.png)
+
+**En entornos pequeños (2x2 - 8x8):**
+- Ambos agentes logran >85% de limpieza
+- Reflexivo alcanza 98-100% en la mayoría de casos
+- Random muestra alta variabilidad (75-100%)
+
+**En entornos grandes (64x64 - 128x128):**
+- **Reflexivo:** 1.7-8.1% de limpieza
+- **Random:** 0.8-3.7% de limpieza
+- **Causa principal:** Límite de 1000 movimientos vs miles de celdas sucias
+
+### Ventaja Relativa del Agente Reflexivo
+
+![Ventaja Relativa](images/ventaja_relativa.png)
+
+**Factor de ventaja por tamaño:**
+- **16x16:** 1.9x más eficiente
+- **32x32:** 2.1x más eficiente  
+- **64x64:** 2.0x más eficiente
+- **128x128:** 2.0x más eficiente
+
+
+## Análisis Comparativo Detallado
+
+### Comportamiento en Diferentes Niveles de Suciedad
+
+**Dirt Rate 10% (baja densidad):**
+- Ambos agentes muestran mejor desempeño relativo
+- Reflexivo mantiene ventaja consistente
+- Movimientos alcanzan para mayor cobertura
+
+**Dirt Rate 80% (alta densidad):**
+- La ventaja del reflexivo se maximiza
+- Ambos agentes enfrentan limitaciones severas
+- El comportamiento deterministico del reflexivo brinda mayor ventaja
+
+## Conclusión
+ Podemos concluir que los 2 agentes en sí a medida que el entorno pasa a ser más complejo se vuelven bastante ineficientes, pero en cuando a su performance en ciertos entornos más medianos y chicos podemos decir que el agente reflexivo es mucho más efectivo por cuestiones de que a la hora de encontrarse una celda, este decide limpiarla, a diferencia de uno random.
