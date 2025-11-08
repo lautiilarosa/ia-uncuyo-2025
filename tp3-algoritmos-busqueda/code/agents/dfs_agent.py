@@ -1,0 +1,24 @@
+import time
+from utils import neighbors_from_desc, reconstruct_path, edge_cost_from_action
+
+def dfs(desc, start_idx, goal_idx, scenario=1):
+    t0 = time.time()
+    stack = [start_idx]
+    came_from = {}
+    visited = set([start_idx])
+    explored = 0
+    while stack:
+        cur = stack.pop()
+        explored += 1
+        if cur == goal_idx:
+            states, actions = reconstruct_path(came_from, start_idx, goal_idx)
+            cost = sum(edge_cost_from_action(a, scenario) for a in actions)
+            return {'success': True, 'states': states, 'actions': actions, 'cost': cost,
+                    'explored': explored, 'time': time.time() - t0}
+        for action, nxt in neighbors_from_desc(desc, cur):
+            if nxt not in visited:
+                visited.add(nxt)
+                came_from[nxt] = (cur, action)
+                stack.append(nxt)
+    return {'success': False, 'states': None, 'actions': None, 'cost': None,
+            'explored': explored, 'time': time.time() - t0}

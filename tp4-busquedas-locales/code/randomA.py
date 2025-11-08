@@ -1,21 +1,24 @@
 import random
 from heuristic import h
 
-def random_algorithm(tablero,max_estados):
+def random_algorithm(tablero, max_estados):
     if h(tablero) == 0:
-        return True,1
+        return True, 0, 1
     
     estados = 1
     while estados < max_estados:
-        column = random.randint(0,len(tablero)-1)
-        fila = random.randint(0,len(tablero)-1)
-        while fila == column:
-            fila = random.randint(0,len(tablero)-1)
+        column = random.randint(0, len(tablero) - 1)
+        fila = random.randint(0, len(tablero) - 1)
+
+        # Evitar mover a la misma fila
+        while fila == tablero[column]:
+            fila = random.randint(0, len(tablero) - 1)
 
         tablero[column] = fila
         estados += 1
-        if h(tablero) == 0:
-            return True,estados
-        
-    return False,h(tablero)
-    
+
+        heuristica = h(tablero)
+        if heuristica == 0:
+            return True, 0, estados
+
+    return False, h(tablero), estados
