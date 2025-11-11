@@ -132,35 +132,34 @@
 ## 3. ANÁLISIS DE EVOLUCIÓN DE H
 
 ### 3.1 Evolución - 4 Reinas (semilla env_n=1)
-![Evolución 4 Reinas](images/H_evol_semilla_size4_env1.png)
+![Evolución 4 Reinas](images/H_evol_size4.png)
 
 **Observaciones**:
-- Hill Climbing converge instantáneamente a H=0
+- Hill Climbing converge a 0
 - Genetic Algorithm converge rápidamente después de ~500 estados
-- Simulated Annealing muestra mejora gradual
+- Simulated Annealing converge a 0 rápidamente
 - Random no muestra patrón de mejora claro
 
 **Conclusión**: Problema trivial para métodos dirigidos
 
 ### 3.2 Evolución - 8 Reinas (semilla env_n=31)  
-![Evolución 8 Reinas](images/H_evol_semilla_size8_env31.png)
+![Evolución 8 Reinas](images/H_evol_size8.png)
 
 **Observaciones**:
-- Simulated Annealing muestra mejora constante y converge a H=0
-- Genetic Algorithm mejora gradualmente pero no alcanza óptimo
+- Simulated Annealing muestra mejora constante pero no llega a 0
+- Genetic Algorithm mejora gradualmente y converge a 0
 - Hill Climbing se estanca en óptimo local
 - Random sin mejora significativa
 
 **Conclusión**: Simulated Annealing demuestra superioridad en convergencia
 
 ### 3.3 Evolución - 10 Reinas (semilla env_n=61)
-![Evolución 10 Reinas](images/H_evol_semilla_size10_env61.png)
+![Evolución 10 Reinas](images/H_evol_size10.png)
 
 **Observaciones**:
-- Ningún algoritmo alcanza H=0 en el límite de estados
-- Simulated Annealing encuentra la mejor solución (H más bajo)
-- Genetic Algorithm mejora pero lentamente
-- Hill Climbing se estanca tempranamente
+- Genético llego a 0
+- Simulated Annealing y Hill Climbing no llegan a 0
+- Random no muestra mejoria 
 
 **Conclusión**: Dificultad extrema, necesidad de más recursos computacionales
 
